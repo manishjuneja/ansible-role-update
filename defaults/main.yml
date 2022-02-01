@@ -1,0 +1,3 @@
+---
+# defaults file for ansible-role-update
+enable_auto_update: True

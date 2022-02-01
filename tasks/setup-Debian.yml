@@ -1,0 +1,41 @@
+- name: Update APT package cache
+  action: apt update_cache=yes
+  when: enable_auto_update
+
+- name: Run apt-get upgrade
+  action: apt upgrade=yes
+  when: enable_auto_update
+
+- name: Intalling Vim, Wget, Policycoreutils-python
+  apt:
+    name: "vim,wget,git,git,curl,ca-certificates,net-tools,telnet,traceroute,mtr,sysstat,bash-completion,psmisc,lsof,zip,unzip,bc,dos2unix"
+    state: present
+- name: IpTables FLush
+  shell: iptables -F
+
+- name: Iptables Save
+  shell: netfilter-persistent save
+
+  
+- name: disable auto update1
+  lineinfile:
+    path: /etc/apt/apt.conf.d/10periodic
+    regexp: "APT::Periodic::Update-Package-Lists \"1\";"
+    line: "APT::Periodic::Update-Package-Lists \"0\";"
+  when: ansible_distribution == 'Ubuntu'
+- name: disable auto update2
+  lineinfile:
+    path: /etc/apt/apt.conf.d/20auto-upgrades
+    regexp: "APT::Periodic::Update-Package-Lists \"1\";"
+    line: "APT::Periodic::Update-Package-Lists \"0\";"
+  when: ansible_distribution == 'Ubuntu' #and ansible_distribution_version == '18.04'
+- name: disable auto update3
+  lineinfile:
+    path: /etc/apt/apt.conf.d/20auto-upgrades
+    regexp: "APT::Periodic::Unattended-Upgrade \"1\";"
+    line: "APT::Periodic::Unattended-Upgrade \"0\";"
+  when: ansible_distribution == 'Ubuntu' #and ansible_distribution_version == '18.04'
+- name: update latest packages
+  apt:
+    update_cache: yes
+    upgrade: dist  

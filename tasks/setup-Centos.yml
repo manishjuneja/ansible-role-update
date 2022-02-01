@@ -1,0 +1,27 @@
+- name: Installing epel release
+  yum:
+        name: epel-release
+        state: latest
+- name: Updating Sytem
+  yum:
+        name: "*"
+        state: latest
+- name: Intalling Vim, Wget, Policycoreutils-python
+  yum:
+        name: "vim,wget,yum-utils,policycoreutils-python,git,python-pip,git,curl,ca-certificates,net-tools,telnet,traceroute,mtr,bind-utils,nfs-utils,sysstat,ntsysv,yum-utils,yum-plugin-security,bash-completion,psmisc,lsof,zip,unzip,bc,dos2unix,mailx"
+        state: present
+
+- name: update the system
+  yum:
+    name: "@Development tools"
+    #state: latest
+
+- name: Disabling SELinux state
+  selinux:
+    state: disabled
+
+- name: Service Firewalld
+  service:
+   name: firewalld
+   state: stopped
+   enabled: False

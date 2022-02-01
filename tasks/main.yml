@@ -1,0 +1,40 @@
+---
+- name: Adding Users
+  shell: |
+     adduser --disabled-password --gecos "" svcvplatx
+     usermod -aG sudo svcvplatx
+     mkdir -p /home/svcvplatx/.ssh
+     cp /home/ubuntu/.ssh/authorized_keys /home/svcvplatx/.ssh/
+     chown -R svcvplatx:svcvplatx /home/svcvplatx/.ssh/
+     mkdir -p /opt/vcloudx
+     chown -R svcvplatx:svcvplatx /opt/vcloudx
+  become: yes
+  #ignore_errors: yes
+
+- name: Copy Keys
+  shell: mkdir -p /home/svcvplatx/.ssh && cp /home/ubuntu/.ssh/authorized_keys /home/svcvplatx/.ssh/ && sudo chown -R svcvplatx:svcvplatx /home/svcvplatx/.ssh/
+  become: yes
+
+- name: Add user to sudoers file
+  lineinfile:
+    path: /etc/sudoers.d/svcvplatx
+    line: 'svcvplatx ALL=(ALL) NOPASSWD: ALL'
+    state: present
+    mode: 0440
+    create: yes
+    validate: 'visudo -cf %s'
+
+
+- include_tasks: setup-Centos.yml
+  when: ansible_os_family == 'RedHat'
+
+- include_tasks: setup-Debian.yml
+  when: ansible_os_family == 'Debian'
+
+- name: chown and chmod as required
+  file:
+      path: /opt/vcloudx
+      owner: "{{ login_user }}"
+      group: "{{ login_user }}"
+      mode: 0755
+      recurse: yes
